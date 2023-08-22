@@ -20,7 +20,7 @@ class ContributorFactory extends Factory
         return [
             'user_name' => $this->faker->userName(),
             'amount' => $this->faker->randomFloat(2, 100, 1000),
-            'collaction_id' => Collection::factory()
+            'collection_id' => Collection::factory()
         ];
     }
 }

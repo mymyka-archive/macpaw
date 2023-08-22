@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Contributor extends Model
 {
     use HasFactory;
+
+    public function collection()
+    {
+        return $this->belongsTo(Collection::class);
+    }
 }

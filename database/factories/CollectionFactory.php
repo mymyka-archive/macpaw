@@ -17,7 +17,10 @@ class CollectionFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'title' => $this->faker->title(),
+            'description' => $this->faker->text(),
+            'target_amount' => $this->faker->randomFloat(2, 100, 1000),
+            'link' => $this->faker->url()
         ];
     }
 }

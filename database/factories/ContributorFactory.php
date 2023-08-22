@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Collection;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,9 @@ class ContributorFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'user_name' => $this->faker->userName(),
+            'amount' => $this->faker->randomFloat(2, 100, 1000),
+            'collaction_id' => Collection::factory()
         ];
     }
 }

@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('collections', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
+            $table->string('description');
+            $table->float('target_amount');
+            $table->string('link');
             $table->timestamps();
         });
     }

@@ -14,7 +14,7 @@ class CollectionController extends Controller
      */
     public function index()
     {
-        //
+        return Collection::all();
     }
 
     /**

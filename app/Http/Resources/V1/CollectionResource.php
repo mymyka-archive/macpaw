@@ -4,6 +4,7 @@ namespace App\Http\Resources\V1;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\V1\ContributorResource;
 
 class CollectionResource extends JsonResource
 {
@@ -19,7 +20,8 @@ class CollectionResource extends JsonResource
             'title' => $this->title,
             'descroption' => $this->description,
             'targetAmount' => $this->target_amount,
-            'link' => $this->link
+            'link' => $this->link,
+            'contributors' => ContributorResource::collection($this->whenLoaded('contributors'))
         ];
     }
 }

@@ -40,7 +40,7 @@ class CollectionController extends Controller
      */
     public function show(Collection $collection)
     {
-        return new CollectionResource($collection);
+        return new CollectionResource($collection->loadMissing('contributors'));
     }
 
     /**

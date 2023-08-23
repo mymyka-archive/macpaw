@@ -6,6 +6,8 @@ use App\Http\Requests\StoreCollectionRequest;
 use App\Http\Requests\UpdateCollectionRequest;
 use App\Models\Collection;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\CollectionCollection;
+use App\Http\Resources\V1\CollectionResource;
 
 class CollectionController extends Controller
 {
@@ -14,7 +16,7 @@ class CollectionController extends Controller
      */
     public function index()
     {
-        return Collection::all();
+        return new CollectionCollection(Collection::all());
     }
 
     /**
@@ -38,7 +40,7 @@ class CollectionController extends Controller
      */
     public function show(Collection $collection)
     {
-        //
+        return new CollectionResource($collection);
     }
 
     /**

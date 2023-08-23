@@ -6,6 +6,8 @@ use App\Http\Requests\StoreContributorRequest;
 use App\Http\Requests\UpdateContributorRequest;
 use App\Models\Contributor;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\ContributorCollection;
+use App\Http\Resources\V1\ContributorResource;
 
 class ContributorController extends Controller
 {
@@ -14,7 +16,7 @@ class ContributorController extends Controller
      */
     public function index()
     {
-        return Contributor::all();
+        return new ContributorCollection(Contributor::all());
     }
 
     /**
@@ -38,7 +40,7 @@ class ContributorController extends Controller
      */
     public function show(Contributor $contributor)
     {
-        //
+        return new ContributorResource($contributor);
     }
 
     /**

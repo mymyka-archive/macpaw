@@ -14,7 +14,7 @@ class ContributorController extends Controller
      */
     public function index()
     {
-        //
+        return Contributor::all();
     }
 
     /**

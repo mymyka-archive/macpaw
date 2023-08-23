@@ -11,7 +11,7 @@ class UpdateCollectionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +21,33 @@ class UpdateCollectionRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            //
-        ];
+        $method = $this->method();
+
+        if ($method == 'PUT')
+        {
+            return [
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'targetAmount' => 'required|numeric',
+                'link' => 'required|string|max:255'
+            ];
+        } else {
+            return [
+                'title' => 'sometimes|required|string|max:255',
+                'description' => 'sometimes|required|string',
+                'targetAmount' => 'sometimes|required|numeric',
+                'link' => 'sometimes|required|string|max:255'
+            ];
+        }        
+    }
+
+    protected function prepareForValidation()
+    {
+        if ($this->has('targetAmount'))
+        {
+            $this->merge([
+                'target_amount' => $this->targetAmount
+            ]);
+        }
     }
 }

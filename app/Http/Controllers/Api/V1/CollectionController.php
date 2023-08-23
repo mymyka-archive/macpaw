@@ -56,7 +56,8 @@ class CollectionController extends Controller
      */
     public function update(UpdateCollectionRequest $request, Collection $collection)
     {
-        //
+        $collection->update($request->all());
+        return new CollectionResource($collection);
     }
 
     /**

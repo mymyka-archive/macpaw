@@ -9,6 +9,13 @@ class Collection extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'title',
+        'description',
+        'target_amount',
+        'link',
+    ];
+
     public function contributors()
     {
         return $this->hasMany(Contributor::class);

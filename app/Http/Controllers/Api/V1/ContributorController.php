@@ -32,7 +32,7 @@ class ContributorController extends Controller
      */
     public function store(StoreContributorRequest $request)
     {
-        //
+        return new ContributorResource(Contributor::create($request->validated()));
     }
 
     /**

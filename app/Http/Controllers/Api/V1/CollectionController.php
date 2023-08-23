@@ -32,7 +32,7 @@ class CollectionController extends Controller
      */
     public function store(StoreCollectionRequest $request)
     {
-        //
+        return new CollectionResource(Collection::create($request->all()));
     }
 
     /**

@@ -34,7 +34,6 @@ class StoreContributorRequest extends FormRequest
         $this->merge([
             'user_name' => $this->userName,
             'collection_id' => $this->collectionId,
-            'amount' => $this->amount
         ]);
     }
 }

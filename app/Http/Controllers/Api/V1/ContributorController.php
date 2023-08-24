@@ -65,6 +65,7 @@ class ContributorController extends Controller
      */
     public function destroy(Contributor $contributor)
     {
-        //
+        $contributor->delete();
+        return response()->noContent();
     }
 }

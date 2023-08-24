@@ -65,6 +65,7 @@ class CollectionController extends Controller
      */
     public function destroy(Collection $collection)
     {
-        //
+        $collection->delete();
+        return response()->noContent();
     }
 }

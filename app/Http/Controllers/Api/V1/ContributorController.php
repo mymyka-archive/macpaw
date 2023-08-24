@@ -56,7 +56,8 @@ class ContributorController extends Controller
      */
     public function update(UpdateContributorRequest $request, Contributor $contributor)
     {
-        //
+        $contributor->update($request->all());
+        return new ContributorResource($contributor);
     }
 
     /**

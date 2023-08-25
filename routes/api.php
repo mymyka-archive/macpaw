@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\UserController;
 use App\Models\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,4 +23,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\Api\V1'], function () {
     Route::apiResource('collections', CollectionController::class);
     Route::apiResource('contributors', ContributorController::class);
+
+    Route::controller(UserController::class)->group(function () {
+        Route::post('users/login', 'login');
+        Route::post('users/register', 'register');
+        Route::post('users/logout', 'logout');
+        Route::post('users/refresh', 'refresh');
+    });
 });

@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Commands\V1\User\RegisterUserCommand;
-use Illuminate\Http\Request;
+use App\Commands\V1\User\RefreshUserCommand;
+use App\Commands\V1\User\LogInUserCommand;
+use App\Commands\V1\User\LogOutUserCommand;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LogInUserRequest;
 use App\Http\Requests\RegisterUserRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 
 class UserController extends Controller
 {
@@ -20,22 +19,12 @@ class UserController extends Controller
 
     public function login(LogInUserRequest $request)
     {
-        $credentials = $request->only('email', 'password');
-
-        $token = Auth::attempt($credentials);
-        if (!$token) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Unauthorized',
-            ], 401);
-        }
-
-        $user = Auth::user();
+        $result = LogInUserCommand::call($request);
         return response()->json([
                 'status' => 'success',
-                'user' => $user,
+                'user' => $result->user,
                 'authorisation' => [
-                    'token' => $token,
+                    'token' => $result->token,
                     'type' => 'bearer',
                 ]
             ]);
@@ -57,7 +46,7 @@ class UserController extends Controller
 
     public function logout()
     {
-        Auth::logout();
+        $result = LogOutUserCommand::call();
         return response()->json([
             'status' => 'success',
             'message' => 'Successfully logged out',
@@ -66,11 +55,12 @@ class UserController extends Controller
 
     public function refresh()
     {
+        $result = RefreshUserCommand::call();
         return response()->json([
             'status' => 'success',
-            'user' => Auth::user(),
+            'user' => $result->user,
             'authorisation' => [
-                'token' => Auth::refresh(),
+                'token' => $result->token,
                 'type' => 'bearer',
             ]
         ]);

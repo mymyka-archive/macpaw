@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Commands\V1\User\RegisterUserCommand;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LogInUserRequest;
@@ -42,19 +43,13 @@ class UserController extends Controller
     }
 
     public function register(RegisterUserRequest $request){
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        $token = Auth::login($user);
+        $result = RegisterUserCommand::call($request);
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
-            'user' => $user,
+            'user' => $result->user,
             'authorisation' => [
-                'token' => $token,
+                'token' => $result->token,
                 'type' => 'bearer',
             ]
         ]);

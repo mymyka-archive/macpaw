@@ -9,6 +9,12 @@ class Contributor extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'user_name',
+        'collection_id',
+        'amount'
+    ];
+
     public function collection()
     {
         return $this->belongsTo(Collection::class);

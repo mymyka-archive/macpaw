@@ -6,6 +6,8 @@ use App\Http\Requests\StoreContributorRequest;
 use App\Http\Requests\UpdateContributorRequest;
 use App\Models\Contributor;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\ContributorCollection;
+use App\Http\Resources\V1\ContributorResource;
 
 class ContributorController extends Controller
 {
@@ -14,7 +16,7 @@ class ContributorController extends Controller
      */
     public function index()
     {
-        //
+        return new ContributorCollection(Contributor::all());
     }
 
     /**
@@ -30,7 +32,7 @@ class ContributorController extends Controller
      */
     public function store(StoreContributorRequest $request)
     {
-        //
+        return new ContributorResource(Contributor::create($request->all()));
     }
 
     /**
@@ -38,7 +40,7 @@ class ContributorController extends Controller
      */
     public function show(Contributor $contributor)
     {
-        //
+        return new ContributorResource($contributor);
     }
 
     /**
@@ -54,7 +56,8 @@ class ContributorController extends Controller
      */
     public function update(UpdateContributorRequest $request, Contributor $contributor)
     {
-        //
+        $contributor->update($request->all());
+        return new ContributorResource($contributor);
     }
 
     /**
@@ -62,6 +65,7 @@ class ContributorController extends Controller
      */
     public function destroy(Contributor $contributor)
     {
-        //
+        $contributor->delete();
+        return response()->noContent();
     }
 }

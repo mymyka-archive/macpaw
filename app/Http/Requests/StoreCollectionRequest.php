@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 
 class StoreCollectionRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class StoreCollectionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,17 @@ class StoreCollectionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'targetAmount' => 'required|numeric',
+            'link' => 'required|string|max:255'
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'target_amount' => $this->targetAmount
+        ]);
     }
 }

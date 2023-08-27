@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Route;
 
 class FilterCollectionRequest extends FormRequest
 {
@@ -21,6 +22,18 @@ class FilterCollectionRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [];
+        return [
+            'name' => "required|string|max:255|in:{$this->getAllowedNames()}",
+            'order' => 'required|string|max:255|in:ASC,DESC',
+            'sortField' => 'sometimes|required|string|max:255',
+        ];
+    }
+
+    public function getAllowedNames(): string
+    {
+        return implode(',', [
+            'sumLeft',
+            'activeCollection',
+        ]);
     }
 }

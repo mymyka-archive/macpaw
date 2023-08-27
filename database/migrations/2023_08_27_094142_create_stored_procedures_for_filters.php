@@ -12,15 +12,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement('DROP PROCEDURE IF EXISTS contributions_by_collection;');
+        DB::statement('DROP PROCEDURE IF EXISTS collections_summary_procedure;');
         DB::statement("
-            CREATE PROCEDURE contributions_by_collection()
+            CREATE PROCEDURE collections_summary_procedure()
             BEGIN
-                CREATE TEMPORARY TABLE contribution_sum
+                DROP TABLE IF EXISTS contribution_sum;
+                
+                CREATE TABLE contribution_sum
                 SELECT collection_id, SUM(amount) AS total 
                 FROM contributors 
                 GROUP BY collection_id;
 
+                DROP TABLE IF EXISTS collections_summary;
+                CREATE TABLE collections_summary
                 SELECT id, 
                     title, 
                     description, 
@@ -30,32 +34,30 @@ return new class extends Migration
                     (target_amount - total) AS sum_left 
                 FROM contribution_sum INNER JOIN collections 
                     ON contribution_sum.collection_id = collections.id;
-
-                DROP TEMPORARY TABLE IF EXISTS contribution_sum;
             END;");
         
-        DB::statement('DROP PROCEDURE IF EXISTS active_collections;');
-        DB::statement("
-            CREATE PROCEDURE active_collections()
-            BEGIN
-                CREATE TEMPORARY TABLE contribution_sum
-                SELECT collection_id, SUM(amount) AS total 
-                FROM contributors 
-                GROUP BY collection_id;
+        // DB::statement('DROP PROCEDURE IF EXISTS active_collections;');
+        // DB::statement("
+        //     CREATE PROCEDURE active_collections()
+        //     BEGIN
+        //         CREATE TEMPORARY TABLE contribution_sum
+        //         SELECT collection_id, SUM(amount) AS total 
+        //         FROM contributors 
+        //         GROUP BY collection_id;
 
-                SELECT id, 
-                    title, 
-                    description, 
-                    target_amount, 
-                    link, 
-                    total, 
-                    (target_amount - total) AS sum_left 
-                FROM contribution_sum INNER JOIN collections 
-                    ON contribution_sum.collection_id = collections.id
-                WHERE (target_amount - total) > 0;
+        //         SELECT id, 
+        //             title, 
+        //             description, 
+        //             target_amount, 
+        //             link, 
+        //             total, 
+        //             (target_amount - total) AS sum_left 
+        //         FROM contribution_sum INNER JOIN collections 
+        //             ON contribution_sum.collection_id = collections.id
+        //         WHERE (target_amount - total) > 0;
 
-                DROP TEMPORARY TABLE IF EXISTS contribution_sum;
-            END;");
+        //         DROP TEMPORARY TABLE IF EXISTS contribution_sum;
+        //     END;");
     }
 
     /**
@@ -63,7 +65,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement('DROP PROCEDURE IF EXISTS contributions_by_collection;');
-        DB::statement('DROP PROCEDURE IF EXISTS active_collections;');
+        DB::statement('DROP PROCEDURE IF EXISTS collections_summary_procedure;');
     }
 };

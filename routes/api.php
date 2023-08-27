@@ -24,6 +24,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\Api\V1'], f
     Route::apiResource('collections', CollectionController::class);
     Route::apiResource('contributors', ContributorController::class);
 
+    Route::get('collections/search/filter', 'CollectionController@filter');
+
     Route::controller(UserController::class)->group(function () {
         Route::post('users/login', 'login');
         Route::post('users/register', 'register');

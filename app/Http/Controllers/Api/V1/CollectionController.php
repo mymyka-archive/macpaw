@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Commands\V1\Collection\FilterCollectionCommand;
 use App\Http\Requests\StoreCollectionRequest;
 use App\Http\Requests\UpdateCollectionRequest;
+use App\Http\Requests\FilterCollectionRequest;
 use App\Models\Collection;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\CollectionCollection;
@@ -17,6 +19,12 @@ class CollectionController extends Controller
     public function index()
     {
         return new CollectionCollection(Collection::all());
+    }
+
+    public function filter(FilterCollectionRequest $request)
+    {
+        $result = FilterCollectionCommand::call($request);
+        return $result->data;
     }
 
     /**

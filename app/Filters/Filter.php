@@ -2,7 +2,7 @@
 
 namespace App\Filters;
 
-use Illuminate\Http\Request;
+use Illuminate\Database\Query\Builder;
 
 abstract class Filter
 {
@@ -14,15 +14,13 @@ abstract class Filter
         return $filter;
     }
 
-    public function nextStep(Request $request): ?array
+    public function nextStep(Builder $data): ?Builder
     {
         if ($this->nextFilter) {
-            return $this->nextFilter->filter($request);
+            return $this->nextFilter->filter($data);
         }
-        return null;
+        return $data;
     }
 
-    public abstract function filter(Request $request): array;
-
-    public abstract function getFromDatabase(Request $request): array;
+    public abstract function filter(Builder $data): Builder;
 }

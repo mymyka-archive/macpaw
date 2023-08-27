@@ -3,25 +3,13 @@
 namespace App\Filters\V1\Collection;
 
 use App\Filters\Filter;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Query\Builder;
 
 class ActiveCollectionFilter extends Filter
 {
-    public function filter($request): array
+    public function filter(Builder $data): Builder
     {
-        $data = $this->nextStep($request);
-        if ($data == null) {
-            return $this->getFromDatabase($request);
-        }
-        $data = collect($data);
-        $result = $data->filter(function($value) {
-            return true;
-        })->toArray();
-        return $result;
-    }
-
-    public function getFromDatabase($request): array
-    {
-        return DB::select('CALL active_collections()');
+        $next = $this->nextStep($data);
+        return $next->where('sum_left', '>', '0');
     }
 }

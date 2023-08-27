@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Commands\Result;
 use App\Filters\V1\Collection\SumLeftFilter;
 use App\Filters\V1\Collection\ActiveCollectionFilter;
+use App\Filters\FilterChainBuilder;
+use Illuminate\Support\Facades\DB;
 
 class FilterCollectionCommand extends Command
 {
@@ -22,14 +24,25 @@ class FilterCollectionCommand extends Command
         $request = $this->request;
         $result = new Result();
         
-        $sumLeftFilter = new SumLeftFilter();
-        $activeCollectionFilter = new ActiveCollectionFilter();
-
-        // $sumLeftFilter->then($activeCollectionFilter);
-        $activeCollectionFilter->then($sumLeftFilter);
-
-        $result->data = ($sumLeftFilter->filter($request));
-
+        $filterChainBuilder = new FilterChainBuilder();
+        foreach ($request->filters as $filter) {
+            $filterType = $this->getFilterByName($filter['name']);
+            $filterChainBuilder->addFilter(new $filterType($filter));
+        }
+        $triger_filter = $filterChainBuilder->build()[0];
+        $table = DB::table('collections_summary')
+            ->select('id', 'title', 'description', 'target_amount', 'link', 'total', 'sum_left');
+        $result->data = $triger_filter->filter($table)->get();
         return $result;
+    }
+
+    public function getFilterByName(string $name)
+    {
+        $filters = [
+            'sumLeft' => SumLeftFilter::class,
+            'activeCollection' => ActiveCollectionFilter::class,
+        ];
+
+        return $filters[$name];
     }
 }

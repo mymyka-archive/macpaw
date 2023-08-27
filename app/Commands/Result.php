@@ -2,6 +2,11 @@
 
 namespace App\Commands;
 
+/**
+ * Dataclass
+ * Contains the result of a command
+ * Have dynamic properties
+ */
 class Result
 {
     private $data = [];

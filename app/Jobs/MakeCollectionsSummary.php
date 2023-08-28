@@ -27,6 +27,9 @@ class MakeCollectionsSummary implements ShouldQueue
      */
     public function handle(): void
     {
+        /**
+         * Call the stored procedure to make and update the collection summary
+         */
         DB::statement('CALL collections_summary_procedure()');
     }
 }

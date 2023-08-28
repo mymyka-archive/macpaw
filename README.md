@@ -353,6 +353,7 @@ class MakeCollectionsSummary implements ShouldQueue
 ### Authentication with JWT tokens
 
 In my pet-project I used JWT tokens, and I liked it. So I decided to make authentication with WT tokens here as well.
+All reads are available for every user, but for access other methods you need access token.
 
 
 ### SQL
@@ -379,3 +380,142 @@ public function store(StoreCollectionRequest $request)
 ```
 
 ## Tasks
+
+Here tasks and how to check them. 
+
+### Put in header in all requests
+
+```
+Accept application/json
+```
+
+### Реалізувати можливість для створення нових зборів за допомогою POST-запиту з вказанням заголовку, опису, кінцевої суми та посилання.
+
+```
+POST http://0.0.0.0:80/api/v1/collections
+
+{
+    "title": "TEST TEST Test Test title",
+    "description": "Test description",
+    "targetAmount": 1000.5,
+    "link": "Test Link"
+}
+```
+
+### Реалізувати можливість отримання списку всіх зборів за допомогою GET-запиту. Кожен збір повинен містити ідентифікатор, заголовок, опис, кінцеву суму та посилання.
+
+```
+GET http://0.0.0.0:80/api/v1/collections
+```
+
+### Реалізувати можливість долучення до зборів внесків за допомогою POST-запиту з вказанням імені користувача та суми.
+
+```
+POST http://0.0.0.0:80/api/v1/contributors
+
+{
+    "userName": "TEST Test user name",
+    "collectionId": 1,
+    "amount": 100.5
+}
+```
+
+### Реалізувати можливість отримання деталей конкретного збору за його ідентифікатором за допомогою GET-запиту. Деталі повинні містити заголовок, опис, кінцеву суму, посилання та список внесків з ім'ями користувачів та сумами.
+
+```
+GET http://0.0.0.0:80/api/v1/collections/{id}
+```
+
+### Реалізувати можливість фільтрування зборів за залишеною сумою до досягнення кінцевої суми. Отримати список зборів, які мають суму внесків менше за цільову суму.
+
+```
+GET http://0.0.0.0:80/api/v1/collections/search/filter
+
+{
+    "filters": [
+        {
+            "name": "activeCollection"
+        },
+        {
+            "name": "sumLeft",
+            "sortField": "sum_left",
+            "sortOrder": "asc"
+        }
+    ]
+}
+```
+
+### Реалізувати можливість редагування та видалення зборів та внесків.
+```
+PATCH http://0.0.0.0:80/api/v1/collections/{:id}
+
+{
+    "title": "TEST Updateed test title"
+}
+```
+
+```
+PUT http://0.0.0.0:80/api/v1/collections/{:id}
+
+{
+    "title": "Updateed Test title",
+    "description": "Updateed Test description",
+    "targetAmount": 999999.5,
+    "link": "Updateed Test Link"
+}
+```
+
+```
+DELETE http://0.0.0.0:80/api/v1/collections/{:id}
+```
+
+```
+PATCH http://0.0.0.0:80/api/v1/contributors/{:id}
+
+{
+    "userName": "Updated test user name"
+}
+```
+
+```
+PUT http://0.0.0.0:80/api/v1/contributors/{:id}
+
+{
+    "userName": "Updated Test user name",
+    "collectionId": 10,
+     "amount": 100.5
+}
+```
+
+```
+DELETE http://0.0.0.0:80/api/v1/contributors/{:id}
+```
+
+### Додати авторизацію через токени для доступу до API.
+
+```
+POST http://0.0.0.0:80/api/v1/users/register
+
+{
+    "name": "Test user",
+    "email": "tatestuseremail@gamilgmail.coomm",
+    "password": "LOLTESTPASSWORD"
+}
+```
+
+```
+POST http://0.0.0.0:80/api/v1/users/login
+
+{
+    "email": "testuseremail@gamilgmail.coommm",
+    "password": "LOLTESTPASSWORD"
+}
+```
+
+```
+POST http://0.0.0.0:80/api/v1/users/logout
+```
+
+```
+POST http://0.0.0.0:80/api/v1/users/refresh
+```

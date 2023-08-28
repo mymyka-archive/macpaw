@@ -35,29 +35,6 @@ return new class extends Migration
                 FROM contribution_sum INNER JOIN collections 
                     ON contribution_sum.collection_id = collections.id;
             END;");
-        
-        // DB::statement('DROP PROCEDURE IF EXISTS active_collections;');
-        // DB::statement("
-        //     CREATE PROCEDURE active_collections()
-        //     BEGIN
-        //         CREATE TEMPORARY TABLE contribution_sum
-        //         SELECT collection_id, SUM(amount) AS total 
-        //         FROM contributors 
-        //         GROUP BY collection_id;
-
-        //         SELECT id, 
-        //             title, 
-        //             description, 
-        //             target_amount, 
-        //             link, 
-        //             total, 
-        //             (target_amount - total) AS sum_left 
-        //         FROM contribution_sum INNER JOIN collections 
-        //             ON contribution_sum.collection_id = collections.id
-        //         WHERE (target_amount - total) > 0;
-
-        //         DROP TEMPORARY TABLE IF EXISTS contribution_sum;
-        //     END;");
     }
 
     /**

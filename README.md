@@ -450,6 +450,33 @@ GET http://0.0.0.0:80/api/v1/collections/search/filter
 }
 ```
 
+```
+GET http://0.0.0.0:80/api/v1/collections/search/filter
+
+{
+    "filters": [
+        {
+            "name": "sumLeft",
+            "sortField": "sum_left",
+            "sortOrder": "asc"
+        }
+    ]
+}
+```
+
+
+```
+GET http://0.0.0.0:80/api/v1/collections/search/filter
+
+{
+    "filters": [
+        {
+            "name": "activeCollection"
+        }
+    ]
+}
+```
+
 ### Реалізувати можливість редагування та видалення зборів та внесків.
 ```
 PATCH http://0.0.0.0:80/api/v1/collections/{:id}

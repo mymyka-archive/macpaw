@@ -38,8 +38,8 @@ class CollectionController extends Controller
     {
         // ORM
         // return new CollectionResource(Collection::create($request->all()));
+        
         // SQL
-
         $result = DB::insert('INSERT INTO collections (title, description, target_amount, link) VALUES (?, ?, ?, ?)', [
             $request->title,
             $request->description,

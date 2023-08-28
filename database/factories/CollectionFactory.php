@@ -19,7 +19,7 @@ class CollectionFactory extends Factory
         return [
             'title' => $this->faker->words(3, true),
             'description' => $this->faker->text(),
-            'target_amount' => $this->faker->randomFloat(2, 100, 1000),
+            'target_amount' => $this->faker->randomFloat(2, 10000, 50000),
             'link' => $this->faker->url()
         ];
     }

@@ -5,22 +5,22 @@ namespace App\Filters\V1\Collection;
 use App\Filters\Filter;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Database\Query\Builder;
 
 class SumLeftFilter extends Filter 
-{
-    public function filter(Request $request): array
+{    
+    protected string $sortField = 'sum_left';
+    protected string $sortOrder = 'asc';
+
+    public function __construct(array $params = [])
     {
-        $data = $this->nextStep($request);
-        if ($data == null) {
-            return $this->getFromDatabase($request);
-        }
-        $data = collect($data);
-        $result = $data->filter()->toArray();
-        return $result;
+        $this->sortField = $params['sortField'] ?? $this->sortField;
+        $this->sortOrder = $params['sortOrder'] ?? $this->sortOrder;
     }
 
-    public function getFromDatabase(Request $request): array
+    public function filter(Builder $data): Builder
     {
-        return DB::select('CALL contributions_by_collection()');
+        $next = $this->nextStep($data);
+        return $next->orderBy($this->sortField, $this->sortOrder);
     }
 }

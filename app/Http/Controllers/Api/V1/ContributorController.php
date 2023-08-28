@@ -8,6 +8,7 @@ use App\Models\Contributor;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\ContributorCollection;
 use App\Http\Resources\V1\ContributorResource;
+use Illuminate\Support\Facades\DB;
 
 class ContributorController extends Controller
 {
@@ -16,15 +17,10 @@ class ContributorController extends Controller
      */
     public function index()
     {
-        return new ContributorCollection(Contributor::all());
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        // ORM
+        // return new ContributorCollection(Contributor::all());
+        // SQL
+        return DB::select('SELECT id, user_name, amount FROM contributors');
     }
 
     /**
@@ -32,7 +28,15 @@ class ContributorController extends Controller
      */
     public function store(StoreContributorRequest $request)
     {
-        return new ContributorResource(Contributor::create($request->all()));
+        // ORM
+        // return new ContributorResource(Contributor::create($request->all()));
+        // SQL
+        $result = DB::insert('INSERT INTO contributors (collection_id, user_name, amount) VALUES (?, ?, ?)', [
+            $request->collectionId,
+            $request->userName,
+            $request->amount,
+        ]);
+        return ($result) ? response()->json(['message' => 'Success'], 200) : response()->json(['error' => 'Something went wrong'], 500);
     }
 
     /**
@@ -40,15 +44,11 @@ class ContributorController extends Controller
      */
     public function show(Contributor $contributor)
     {
-        return new ContributorResource($contributor);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Contributor $contributor)
-    {
-        //
+        // ORM
+        // return new ContributorResource($contributor);
+        // SQL
+        $result = DB::select('SELECT id, user_name, amount FROM contributors WHERE id = ?', [$contributor->id]);
+        return $result[0];
     }
 
     /**
@@ -65,7 +65,11 @@ class ContributorController extends Controller
      */
     public function destroy(Contributor $contributor)
     {
-        $contributor->delete();
+        // ORM
+        // $contributor->delete();
+        // return response()->noContent();
+        // SQL
+        $result = DB::delete('DELETE FROM contributors WHERE id = ?', [$contributor->id]);
         return response()->noContent();
     }
 }

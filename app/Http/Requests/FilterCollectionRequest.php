@@ -25,7 +25,7 @@ class FilterCollectionRequest extends FormRequest
         return [
             'filters' => 'required|array',
             'filters.*.name' => 'required|string|in:' . $this->getAllowedNames(),
-            'filters.*.sortOrder' => 'sometimes|required|string|in:ASC,DESC',
+            'filters.*.sortOrder' => 'sometimes|required|string|in:ASC,DESC,asc,desc',
             'filters.*.sortField' => 'sometimes|required|string',
         ];
     }

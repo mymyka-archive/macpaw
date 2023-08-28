@@ -389,6 +389,11 @@ Here tasks and how to check them.
 Accept application/json
 ```
 
+### Put in header in all requests, where authentication is required
+```
+Authorization Bearer <JWT TOKEN>
+```
+
 ### Реалізувати можливість для створення нових зборів за допомогою POST-запиту з вказанням заголовку, опису, кінцевої суми та посилання.
 
 ```

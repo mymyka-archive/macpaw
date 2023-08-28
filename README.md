@@ -378,6 +378,8 @@ public function store(StoreCollectionRequest $request)
     return ($result) ? response()->json(['message' => 'Success'], 200) : response()->json(['error' => 'Something went wrong'], 500);
 }
 ```
+### Validation
+All validation in Request classes in app/Http/Requests.
 
 ## Tasks
 

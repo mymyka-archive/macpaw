@@ -2,6 +2,10 @@
 
 namespace App\Filters;
 
+/**
+ * Builds a chain of filters
+ * Implements the Builder Pattern
+ */
 class FilterChainBuilder
 {
     private array $filters;

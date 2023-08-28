@@ -1,66 +1,317 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Bootcamp Technical Task – Back-End PHP
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Features
 
-## About Laravel
+- Using Docker
+- Using Sail
+- Using background jobs
+- Using saved procedure
+- Own implementation of command pattern (commands for controllers)
+- Own implemetation of Chain of Responsobility (for filters)
+- Multiple filters in filtering
+- Authentication with JWT tokens
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Doker
+- Composer
 
-## Learning Laravel
+## Getting Started
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+To get strated you need two terminals
+In first run
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+``` bash
+git clone https://github.com/mymyka/macpaw
+cd macpaw
+cp .env.example .env
+composer install
+./vendor/bin/sail up
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+In second terminal run
 
-## Laravel Sponsors
+``` bash
+cd macpaw
+./vendor/bin/sail artisan migrate:fresh --seed
+./vendor/bin/sail artisan schedule:work
+```
+After minute you should see
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+``` bash
+ INFO  Running scheduled tasks every minute.
 
-### Premium Partners
+2023-08-28 01:24:00 Running [App\Jobs\MakeCollectionsSummary] ... 257ms DONE
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+## Notes
 
-## Contributing
+### Comands
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+In app/Commands/Command.php I made absatract class to implement command pattern.
 
-## Code of Conduct
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+``` PHP
+// app/Commands/Command.php
 
-## Security Vulnerabilities
+<?php
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+namespace App\Commands;
 
-## License
+/*
+* Base class for all commands
+* Implements the Command Pattern
+*/
+abstract class Command {
+    /**
+     * Define in subclass
+     * and put the logic of a command
+     */
+    public abstract function execute(): Result;
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    /**
+     * Called to create instance 
+     * of subclass with parameterns 
+     * in constructor and execute it
+     */
+    public static function call(...$args): Result
+    {
+        $instance = self::create(...$args);
+        return $instance->execute();
+    }
+
+    /**
+     * Creates instance of subclass
+     * with arguments in constructor
+     */
+    private static function create(...$args): self
+    {
+        return new static(...$args);
+    }
+}
+```
+And use it like so
+``` PHP
+// app/Http/Controllers/Api/V1/UserController.php
+
+public function login(LogInUserRequest $request)
+    {
+        $result = LogInUserCommand::call($request);
+        return response()->json([
+                'status' => 'success',
+                'user' => $result->user,
+                'authorisation' => [
+                    'token' => $result->token,
+                    'type' => 'bearer',
+                ]
+            ]);
+
+    }
+```
+
+Also I made data class to store result of commands
+
+``` PHP
+// app/Commands/Result.php
+
+<?php
+
+namespace App\Commands;
+
+/**
+ * Dataclass
+ * Contains the result of a command
+ * Have dynamic properties
+ */
+class Result
+{
+    private $data = [];
+
+    public function __construct()
+    {
+        $this->data['errors'] = [];
+        $this->data['infos'] = [];
+        $this->data['warnings'] = [];
+    }
+
+    public function __get($name) {
+        return $this->data[$name];
+    }
+
+    public function __set($name, $value) {
+        $this->data[$name] = $value;
+        return $this;
+    }
+}
+```
+
+### Filters
+
+Filters implement Chain of Responsibility Pattern
+
+``` PHP
+// app/Filters/Filter.php
+
+<?php
+
+namespace App\Filters;
+
+use Illuminate\Database\Query\Builder;
+
+/**
+ * Base class for all filters
+ * Implements the Chain Of Responsobility Pattern
+ */
+abstract class Filter
+{
+    protected ?Filter $nextFilter = null;
+
+    /**
+     * Called to select nex filter in the chain
+     */
+    public function then(Filter $filter): Filter
+    {
+        $this->nextFilter = $filter;
+        return $filter;
+    }
+
+    /**
+     * Called to call next filter in the chain
+     */
+    public function nextStep(Builder $data): ?Builder
+    {
+        if ($this->nextFilter) {
+            return $this->nextFilter->filter($data);
+        }
+        return $data;
+    }
+
+    /**
+     * Define in subclasses
+     * and put the logic of a filter
+     */
+    public abstract function filter(Builder $data): Builder;
+}
+
+```
+Also I made Filter Chain Builder, so it is easier to make filter chain
+
+``` PHP
+<?php
+
+namespace App\Filters;
+
+/**
+ * Builds a chain of filters
+ * Implements the Builder Pattern
+ */
+class FilterChainBuilder
+{
+    private array $filters;
+
+    public function __construct()
+    {
+        $this->filters = [];
+    }
+
+    public function addFilter(Filter $filter): FilterChainBuilder
+    {
+        $target_filter = end($this->filters);
+        if ($target_filter) {
+            $target_filter->then($filter);
+        }
+        array_push($this->filters, $filter);
+        return $this;
+    }
+
+    public function build(): array
+    {
+        return $this->filters;
+    }
+}
+
+```
+In my filter reuqest you can specify multiple filters, and all of them will be ran in order.
+
+``` JSON 
+{
+    "filters": [
+        {
+            "name": "activeCollection"
+        },
+        {
+            "name": "sumLeft",
+            "sortField": "sum_left",
+            "sortOrder": "asc"
+        }
+    ]
+}
+```
+
+Also in some filters you can specify sortField and SortOrder.
+
+- sumLeft - "Реалізувати можливість фільтрування зборів за залишеною сумою
+до досягнення кінцевої суми." (тут за допомогою параметрів можна вказати поле (по завданню воно "sum_left", але можно будь яке) і з параметром sortOrder можна вказати порядок сортування)
+
+- activeCollection - "Отримати список зборів, які мають суму внесків менше за цільову суму."
+
+### Saved Procedure
+
+When I were making filtering, I considered that we have big database and a lot of users, so I decided to make saved procedure and call it every X seconds (in the code I call it every 5 seconds for testing, but in real situation it would be longer), instaed of making big select staiment with subqueries, in my point it have next advantages:
+
+1. Performance - if we have many records in our database and users make reuqests more then once for X seconds, so it is mach easier for a databse to update table every X seconds, and then take data from it.
+
+2. Security
+
+I have made saved procedure in migration file
+``` PHP
+// database/migrations/2023_08_27_094142_create_stored_procedures_for_filters.php
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        DB::statement('DROP PROCEDURE IF EXISTS collections_summary_procedure;');
+        DB::statement("
+            CREATE PROCEDURE collections_summary_procedure()
+            BEGIN
+                DROP TABLE IF EXISTS contribution_sum;
+                
+                CREATE TABLE contribution_sum
+                SELECT collection_id, SUM(amount) AS total 
+                FROM contributors 
+                GROUP BY collection_id;
+
+                DROP TABLE IF EXISTS collections_summary;
+                CREATE TABLE collections_summary
+                SELECT id, 
+                    title, 
+                    description, 
+                    target_amount, 
+                    link, 
+                    total, 
+                    (target_amount - total) AS sum_left 
+                FROM contribution_sum INNER JOIN collections 
+                    ON contribution_sum.collection_id = collections.id;
+            END;");
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        DB::statement('DROP PROCEDURE IF EXISTS collections_summary_procedure;');
+    }
+};
+```
+### Background Jobs

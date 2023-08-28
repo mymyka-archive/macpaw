@@ -315,3 +315,67 @@ return new class extends Migration
 };
 ```
 ### Background Jobs
+
+In order to keep collectins summary up to date, I made background job, it runs every 5 seconds for testing (but in real situation it can be longer) and call saved procedure for making collection summary.
+
+``` PHP
+// app/Jobs/MakeCollectionsSummary.php
+
+<?php
+
+namespace App\Jobs;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
+
+class MakeCollectionsSummary implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * Execute the job.
+     */
+    public function handle(): void
+    {
+        /**
+         * Call the stored procedure to make and update the collection summary
+         */
+        DB::statement('CALL collections_summary_procedure()');
+    }
+}
+
+```
+
+### Authentication with JWT tokens
+
+In my pet-project I used JWT tokens, and I liked it. So I decided to make authentication with WT tokens here as well.
+
+
+### SQL
+
+Tasks requires all make with SQL, so commented ORM code in all project and write SQL queries, the both work great.
+For example 
+``` PHP
+// app/Http/Controllers/Api/V1/CollectionController.php
+
+public function store(StoreCollectionRequest $request)
+{
+    // ORM
+    // return new CollectionResource(Collection::create($request->all()));
+    
+    // SQL
+    $result = DB::insert('INSERT INTO collections (title, description, target_amount, link) VALUES (?, ?, ?, ?)', [
+        $request->title,
+        $request->description,
+        $request->targetAmount,
+        $request->link
+    ]);
+    return ($result) ? response()->json(['message' => 'Success'], 200) : response()->json(['error' => 'Something went wrong'], 500);
+}
+```
+
+## Tasks
